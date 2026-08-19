@@ -1,4 +1,4 @@
-const CACHE_NAME = "opoligon-cache-v1";
+const CACHE_NAME = "opoligon-cache-v2"; // bumped so old installed service workers are forced to update
 const ASSETS = [
   "./",
   "./index.html",
@@ -25,6 +25,24 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+  // Network-first for page navigations (the HTML shell) so users always get
+  // the latest deployed version instead of a stale cached page. Falls back
+  // to cache only if there's no network (offline).
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
+    );
+    return;
+  }
+
+  // Stale-while-revalidate for everything else (icons, manifest, etc.)
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const fetchPromise = fetch(event.request)
