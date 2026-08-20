@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b1219">
+<title>Opoligon | Custom Apparel Manufacturing</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{
+    --maroon:#2b1219;
+    --maroon-2:#3a1a24;
+    --maroon-3:#48212d;
+    --gold:#c7b27c;
+    --gold-bright:#e6d3a3;
+    --gold-dim:#a88f66;
+    --border:rgba(199,178,124,0.22);
+    --border-strong:rgba(199,178,124,0.45);
+    --danger:#e0736c;
+    --success:#7fbf8f;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-display:Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--maroon);
+    color:var(--gold-bright);
+    font-family:var(--font);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  img{max-width:100%;display:block;}
+  button{font-family:inherit;}
+  a{color:var(--gold-bright);}
+
+  /* ---------- Header ---------- */
+  .site-header{
+    display:flex;align-items:center;gap:12px;
+    padding:16px 18px;
+    background:linear-gradient(180deg,var(--maroon-2),var(--maroon));
+    border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:50;
+  }
+  .site-header img{width:42px;height:42px;border-radius:50%;flex-shrink:0;}
+  .site-header .brand-name{font-family:var(--font-display);font-weight:700;font-size:19px;color:var(--gold-bright);letter-spacing:1px;margin:0;}
+  .site-header .brand-tag{font-size:10.5px;color:var(--gold-dim);margin:2px 0 0 0;letter-spacing:0.5px;text-transform:uppercase;}
+
+  /* ---------- Carousel ---------- */
+  .carousel{position:relative;width:100%;aspect-ratio:16/9;max-height:260px;overflow:hidden;background:var(--maroon-2);}
+  .carousel-track{display:flex;width:300%;height:100%;transition:transform .5s ease;}
+  .slide{width:33.333%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;padding:20px;text-align:center;background-size:cover;background-position:center;}
+  .slide.s1{background-image:linear-gradient(135deg,rgba(43,18,25,0.55),rgba(90,42,56,0.55));background-color:#3a1a24;}
+  .slide.s2{background-image:linear-gradient(135deg,rgba(43,18,25,0.55),rgba(74,36,24,0.55));background-color:#2b1219;}
+  .slide.s3{background-image:linear-gradient(135deg,rgba(58,26,36,0.55),rgba(43,18,25,0.55));background-color:#3a1a24;}
+  .slide .slide-inner{position:relative;z-index:2;}
+  .slide h2{font-family:var(--font-display);font-size:21px;color:var(--gold-bright);margin:0 0 6px 0;letter-spacing:0.5px;}
+  .slide p{font-size:12.5px;color:var(--gold-dim);margin:0;max-width:280px;}
+  .slide-icon{width:46px;height:46px;margin:0 auto 12px auto;color:var(--gold);opacity:0.85;}
+  .carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,0.35);border:1px solid var(--border);color:var(--gold-bright);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;}
+  .carousel-arrow.prev{left:10px;}
+  .carousel-arrow.next{right:10px;}
+  .carousel-dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:6px;z-index:5;}
+  .carousel-dots span{width:6px;height:6px;border-radius:50%;background:rgba(230,211,163,0.35);transition:background .2s ease, width .2s ease;}
+  .carousel-dots span.active{background:var(--gold-bright);width:16px;border-radius:4px;}
+
+  /* ---------- Sections ---------- */
+  .section{max-width:1180px;margin:0 auto;padding:22px 18px;}
+  .section-title{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold-bright);margin:0 0 4px 0;}
+  .section-desc{font-size:12px;color:var(--gold-dim);margin:0 0 16px 0;}
+
+  /* ---------- Tiles ---------- */
+  .tiles-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(min-width:520px){.tiles-grid{grid-template-columns:repeat(4,1fr);}}
+  .tile{position:relative;background:linear-gradient(160deg,rgba(199,178,124,0.10),rgba(199,178,124,0.02)),var(--maroon-2);backdrop-filter:blur(6px);border:1px solid var(--border);border-top:2px solid var(--border-strong);border-radius:16px;padding:18px 14px;text-align:left;cursor:pointer;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;}
+  .tile:active{transform:scale(0.97);}
+  .tile:hover{border-color:var(--border-strong);box-shadow:0 6px 18px rgba(0,0,0,0.25);}
+  .tile .tile-icon{width:38px;height:38px;border-radius:10px;background:var(--maroon-3);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);margin-bottom:12px;}
+  .tile h3{font-family:var(--font-display);font-size:13.5px;font-weight:700;color:var(--gold-bright);margin:0 0 4px 0;line-height:1.3;}
+  .tile p{font-size:10.5px;color:var(--gold-dim);margin:0;line-height:1.4;}
+  .tile .lock-badge{position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;color:var(--maroon);background:var(--gold);padding:3px 7px 3px 6px;border-radius:20px;display:flex;align-items:center;gap:3px;letter-spacing:0.3px;}
+
+  /* ---------- Product / Trending cards ---------- */
+  .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+  .product-card{background:var(--maroon-2);border:1px solid var(--border);border-radius:14px;overflow:hidden;flex-shrink:0;}
+  .product-thumb{aspect-ratio:1/1;background:linear-gradient(135deg,var(--maroon-3),var(--maroon-2));display:flex;align-items:center;justify-content:center;color:var(--gold-dim);position:relative;overflow:hidden;}
+  .product-thumb img{width:100%;height:100%;object-fit:cover;}
+  .product-badge{position:absolute;top:8px;left:8px;background:var(--gold);color:var(--maroon);font-size:9px;font-weight:700;padding:3px 7px;border-radius:20px;letter-spacing:0.3px;}
+  .product-card h4{font-family:var(--font-display);font-size:12.5px;color:var(--gold-bright);margin:10px 10px 2px 10px;}
+  .product-card p{font-size:10.5px;color:var(--gold-dim);margin:0 10px 10px 10px;line-height:1.4;}
+
+  /* ---------- Trending: 2 swipeable rows ---------- */
+  .row-scroll{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;padding:2px 2px 10px 2px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--gold-dim) transparent;}
+  .row-scroll::-webkit-scrollbar{height:5px;}
+  .row-scroll::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:10px;}
+  .row-scroll .product-card{width:132px;scroll-snap-align:start;}
+  .row-scroll + .row-scroll{margin-top:2px;}
+  .swipe-hint{font-size:10px;color:var(--gold-dim);text-align:right;margin:-8px 2px 12px 2px;opacity:0.75;}
+
+  /* ---------- Contacts ---------- */
+  .contact-list{display:flex;flex-direction:column;gap:10px;}
+  .contact-row{display:flex;align-items:center;gap:12px;background:var(--maroon-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;text-decoration:none;}
+  .contact-row .c-icon{width:32px;height:32px;border-radius:8px;background:var(--maroon-3);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);flex-shrink:0;}
+  .contact-row .c-text b{display:block;font-size:12.5px;color:var(--gold-bright);}
+  .contact-row .c-text span{display:block;font-size:11px;color:var(--gold-dim);margin-top:1px;}
+  .social-row{display:flex;gap:10px;margin-top:12px;}
+  .social-row a{width:36px;height:36px;border-radius:50%;background:var(--maroon-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);}
+
+  /* ---------- Team footer ---------- */
+  .team-banner{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--border);background:linear-gradient(135deg,var(--maroon-2),var(--maroon-3));}
+  .team-banner-img{width:100%;aspect-ratio:16/7;object-fit:cover;display:block;}
+  .team-banner-fallback{aspect-ratio:16/7;display:flex;align-items:center;justify-content:center;color:var(--gold-dim);font-size:11.5px;text-align:center;padding:14px;}
+  .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:14px;}
+  .team-member{text-align:center;background:var(--maroon-2);border:1px solid var(--border);border-radius:14px;padding:14px 10px;}
+  .team-avatar{width:54px;height:54px;border-radius:50%;margin:0 auto 8px auto;background:var(--maroon-3);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;color:var(--gold-bright);font-size:16px;overflow:hidden;}
+  .team-avatar img{width:100%;height:100%;object-fit:cover;}
+  .team-member b{display:block;font-size:12px;color:var(--gold-bright);}
+  .team-member span{display:block;font-size:10px;color:var(--gold-dim);margin-top:2px;}
+  footer.foot{text-align:center;padding:20px;font-size:10.5px;color:var(--gold-dim);}
+
+  /* ---------- Top-level full screens ---------- */
+  .top-screen{display:none;min-height:100vh;background:var(--maroon);}
+  .back-row{max-width:1180px;margin:0 auto;padding:14px 18px 0 18px;}
+  .back-btn{background:none;border:1px solid var(--border);color:var(--gold-dim);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .back-btn:active{border-color:var(--border-strong);color:var(--gold-bright);}
+  .screen-title{font-family:var(--font-display);font-size:19px;color:var(--gold-bright);margin:14px 0 2px 0;}
+  .screen-desc{font-size:12px;color:var(--gold-dim);margin:0 0 16px 0;}
+
+  /* ---------- Factory Dashboard ---------- */
+  .panel{background:var(--maroon-2);border:1px solid var(--border);border-radius:16px;padding:16px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:11px;color:var(--gold-dim);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.4px;}
+  .field input,.field select,.field textarea{width:100%;background:var(--maroon);border:1px solid var(--border);color:var(--gold-bright);border-radius:8px;padding:10px 12px;font-size:13.5px;outline:none;font-family:inherit;}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--border-strong);}
+  .field textarea{resize:vertical;min-height:60px;}
+  .btn-gold{background:var(--gold);color:var(--maroon);border:none;border-radius:9px;padding:11px 16px;font-size:13.5px;font-weight:700;cursor:pointer;}
+  .btn-gold:active{opacity:0.85;}
+  .btn-outline{background:none;border:1px solid var(--border-strong);color:var(--gold-bright);border-radius:9px;padding:11px 16px;font-size:13.5px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;display:inline-block;}
+  .stage-tabs{display:flex;gap:6px;overflow-x:auto;padding:14px 0 0 0;margin-bottom:14px;}
+  .stage-tab{flex-shrink:0;padding:8px 13px;border-radius:20px;border:1px solid var(--border);background:var(--maroon-2);color:var(--gold-dim);font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .stage-tab.active{background:var(--gold);color:var(--maroon);border-color:var(--gold);}
+  .order-card{background:var(--maroon-2);border:1px solid var(--border);border-radius:14px;padding:13px 15px;margin-bottom:10px;}
+  .order-card .o-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
+  .order-card h4{font-family:var(--font-display);font-size:14px;color:var(--gold-bright);margin:0;}
+  .order-card .o-meta{font-size:11px;color:var(--gold-dim);margin:2px 0 0 0;}
+  .order-card .o-badge{font-size:9.5px;font-weight:700;background:var(--maroon-3);color:var(--gold);padding:3px 8px;border-radius:20px;white-space:nowrap;}
+  .order-card .o-actions{display:flex;gap:8px;margin-top:10px;}
+  .o-actions button{flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--maroon);color:var(--gold-bright);font-size:11.5px;font-weight:600;cursor:pointer;}
+  .o-actions button.danger{color:var(--danger);border-color:rgba(224,115,108,0.35);}
+  .empty-note{font-size:12px;color:var(--gold-dim);text-align:center;padding:30px 10px;}
+
+  /* ---------- Embedded Factory Dashboard iframe ---------- */
+  .embed-frame{width:100%;height:calc(100vh - 118px);min-height:520px;border:none;display:block;background:var(--maroon-2);}
+
+  /* ---------- Digital Catalog (PDF) ---------- */
+  .pdf-wrap{background:var(--maroon-2);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+  .pdf-viewer{width:100%;height:62vh;min-height:340px;border:none;background:#160a0e;display:block;}
+  .pdf-fallback{padding:40px 18px;text-align:center;color:var(--gold-dim);font-size:12.5px;}
+  .pdf-actions{display:flex;gap:10px;padding:14px;border-top:1px solid var(--border);flex-wrap:wrap;}
+  .pdf-actions a{flex:1;min-width:140px;}
+
+  /* ---------- CCTV ---------- */
+  .cctv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+  .cctv-card{background:var(--maroon-2);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+  .cctv-feed{aspect-ratio:16/9;background:#160a0e;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--gold-dim);font-size:11px;gap:6px;position:relative;}
+  .cctv-feed .rec-dot{position:absolute;top:8px;left:8px;font-size:9.5px;color:var(--gold-dim);font-family:monospace;}
+  .cctv-card h4{font-size:12.5px;color:var(--gold-bright);margin:10px 12px 2px 12px;}
+  .cctv-card .meta{font-size:10.5px;color:var(--gold-dim);margin:0 12px 10px 12px;}
+
+  /* ---------- Reviews ---------- */
+  .stars-input{display:flex;gap:6px;font-size:26px;cursor:pointer;margin:4px 0;}
+  .stars-input span{color:var(--maroon-3);}
+  .stars-input span.active{color:var(--gold);}
+  .review-item{background:var(--maroon-2);border:1px solid var(--border);border-radius:14px;padding:13px 15px;margin-bottom:10px;}
+  .review-item .r-top{display:flex;justify-content:space-between;gap:10px;margin-bottom:4px;}
+  .review-item .r-name{font-weight:700;font-size:13px;color:var(--gold-bright);}
+  .review-item .r-stars{color:var(--gold);font-size:12px;}
+  .review-item .r-date{font-size:10px;color:var(--gold-dim);white-space:nowrap;}
+  .review-item .r-text{font-size:12.5px;color:var(--gold-dim);line-height:1.5;}
+
+  /* ---------- Toast ---------- */
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--maroon-3);border:1px solid var(--border-strong);color:var(--gold-bright);padding:11px 18px;border-radius:10px;font-size:12.5px;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:2000;max-width:88%;text-align:center;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{position:fixed;inset:0;background:rgba(10,4,6,0.7);display:none;align-items:flex-end;justify-content:center;z-index:1000;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:var(--maroon);border:1px solid var(--border-strong);border-radius:20px 20px 0 0;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;padding:20px 18px 30px 18px;}
+  .modal-box h3{font-family:var(--font-display);font-size:17px;color:var(--gold-bright);margin:0 0 14px 0;}
+
+  /* ---------- PIN Keypad Modal ---------- */
+  .pin-modal .modal-box{max-width:340px;text-align:center;padding-bottom:26px;}
+  .pin-icon{width:44px;height:44px;border-radius:50%;background:var(--maroon-3);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;margin:0 auto 12px auto;color:var(--gold-bright);}
+  .pin-sub{font-size:11.5px;color:var(--gold-dim);margin:0 0 16px 0;}
+  .pin-dots{display:flex;justify-content:center;gap:12px;margin-bottom:18px;}
+  .pin-dots span{width:13px;height:13px;border-radius:50%;border:1px solid var(--border-strong);background:transparent;transition:background .15s ease,transform .15s ease;}
+  .pin-dots span.filled{background:var(--gold);border-color:var(--gold);transform:scale(1.08);}
+  .pin-dots.shake{animation:pinshake .38s ease;}
+  @keyframes pinshake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+  .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:270px;margin:0 auto;}
+  .keypad button{aspect-ratio:1/1;border-radius:50%;border:1px solid var(--border);background:var(--maroon-2);color:var(--gold-bright);font-size:19px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .keypad button:active{background:var(--maroon-3);border-color:var(--border-strong);}
+  .keypad button.ghost{background:none;border:none;color:var(--gold-dim);font-size:12px;}
+  .pin-error{font-size:11.5px;color:var(--danger);height:16px;margin-bottom:4px;}
+</style>
+</head>
+<body>
+
+<!-- Fatal-error safety net: zero-dependency, always runs first -->
+<div id="fatalError" style="display:none;position:fixed;inset:0;z-index:99999;background:#200f14;color:#f3c9c4;font-family:monospace;font-size:13px;line-height:1.6;padding:22px;overflow:auto;white-space:pre-wrap;"></div>
+<script>
+  window.addEventListener('error', function(e){
+    var el = document.getElementById('fatalError');
+    if(!el) return;
+    el.style.display = 'block';
+    el.textContent = 'A script error stopped this page from loading correctly.\n\n'
+      + 'Message: ' + (e.message || 'unknown') + '\n'
+      + 'Line: ' + (e.lineno || '?') + ', Column: ' + (e.colno || '?') + '\n\n'
+      + 'Please screenshot this exact message and send it back.';
+    el.addEventListener('click', function(){ el.style.display = 'none'; }, {once:true});
+  });
+</script>
+<noscript>
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#2b1219;color:#c7b27c;font-family:sans-serif;padding:30px;text-align:center;">
+    This app needs JavaScript enabled in your browser to run.
+  </div>
+</noscript>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+  <img src="icon-192.png" alt="Opoligon logo">
+  <div>
+    <p class="brand-name">OPOLIGON</p>
+    <p class="brand-tag">Custom Apparel Manufacturing</p>
+  </div>
+</header>
+
+<!-- ================= HOME ================= -->
+<div id="home">
+
+  <!--
+    CAROUSEL CONFIG:
+    Har slide ke <div class="slide sX"> par style="background-image:url('your-image.jpg')" add kar dein
+    to woh apni poster image dikhayega (behind the gradient overlay + text).
+    Text/heading neeche <h2> aur <p> mein change karein.
+  -->
+  <div class="carousel" id="carousel">
+    <div class="carousel-track" id="carouselTrack">
+      <div class="slide s1" style="background-image:url('');">
+        <div class="slide-inner">
+          <svg class="slide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V10l6 4v-4l6 4v-4l6 4v7H3z"/></svg>
+          <h2>Custom Knitwear, Made Right</h2>
+          <p>Scarves, beanies, jerseys &amp; more — manufactured to your exact spec.</p>
+        </div>
+      </div>
+      <div class="slide s2" style="background-image:url('');">
+        <div class="slide-inner">
+          <svg class="slide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+          <h2>Premium Sportswear</h2>
+          <p>Jerseys, polos &amp; activewear built for teams and clubs worldwide.</p>
+        </div>
+      </div>
+      <div class="slide s3" style="background-image:url('');">
+        <div class="slide-inner">
+          <svg class="slide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7l-9 9-5-5"/></svg>
+          <h2>Bulk Orders Welcome</h2>
+          <p>From sampling to full production runs — reliable turnaround, every time.</p>
+        </div>
+      </div>
+    </div>
+    <button class="carousel-arrow prev" id="carPrev" aria-label="Previous slide">‹</button>
+    <button class="carousel-arrow next" id="carNext" aria-label="Next slide">›</button>
+    <div class="carousel-dots" id="carDots">
+      <span class="active"></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Tiles -->
+  <section class="section" style="padding-bottom:6px;">
+    <div class="tiles-grid">
+      <div class="tile" id="tileFactory" data-locked="true" data-pin-target="factory">
+        <span class="lock-badge">🔒 SECURE</span>
+        <div class="tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V10l6 4v-4l6 4v-4l6 4v7H3z"/><path d="M3 21h18"/></svg></div>
+        <h3>Factory Production Dashboard</h3>
+        <p>Orders, pipeline &amp; archive</p>
+      </div>
+      <div class="tile" id="tileCatalog">
+        <div class="tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+        <h3>Digital Catalog</h3>
+        <p>View &amp; download PDF</p>
+      </div>
+      <div class="tile" id="tileCctv" data-locked="true" data-pin-target="cctv">
+        <span class="lock-badge">🔒 SECURE</span>
+        <div class="tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+        <h3>CCTV Cameras</h3>
+        <p>Factory live feeds</p>
+      </div>
+      <div class="tile" id="tileReviews">
+        <div class="tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+        <h3>Review Box</h3>
+        <p>Ratings &amp; feedback</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trending Products: 2 swipeable rows x 8 = 16 items -->
+  <section class="section">
+    <h2 class="section-title">Trending Products</h2>
+    <p class="section-desc">Popular picks from our knitwear &amp; sportswear range.</p>
+    <div class="row-scroll" id="trendingRow1"></div>
+    <div class="row-scroll" id="trendingRow2"></div>
+    <p class="swipe-hint">swipe &rarr;</p>
+  </section>
+
+  <!-- Company Contacts -->
+  <section class="section">
+    <h2 class="section-title">Get In Touch</h2>
+    <p class="section-desc">Reach out for orders, samples or bulk inquiries.</p>
+    <div class="contact-list">
+      <a class="contact-row" href="https://wa.me/923377649333" target="_blank" rel="noopener">
+        <div class="c-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0012.05 4a8.94 8.94 0 00-7.74 13.4L3 21l3.7-1.28a8.9 8.9 0 004.35 1.13h.01A8.94 8.94 0 0017.6 6.32zM12.05 19.9a7.4 7.4 0 01-3.78-1.04l-.27-.16-2.24.77.75-2.19-.18-.28a7.44 7.44 0 1112.9-5.5 7.4 7.4 0 01-7.18 6.4z"/></svg></div>
+        <div class="c-text"><b>WhatsApp</b><span>+92 337 7649333</span></div>
+      </a>
+      <a class="contact-row" href="mailto:support.opoligon@gmail.com">
+        <div class="c-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+        <div class="c-text"><b>Email</b><span>support.opoligon@gmail.com</span></div>
+      </a>
+      <div class="contact-row" style="cursor:default;">
+        <div class="c-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div class="c-text"><b>Factory Address</b><span>Razabad Opposite Garjakh police station, Gujranwala</span></div>
+      </div>
+    </div>
+    <div class="social-row">
+      <a href="https://www.facebook.com/share/1HKgih1iaB/" target="_blank" rel="noopener" aria-label="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.5l.5-3h-3V8.5c0-.87.24-1.46 1.5-1.46H16.5V4.34C16.24 4.3 15.36 4.22 14.33 4.22c-2.15 0-3.62 1.31-3.62 3.72v2.08H8.2v3h2.5V21h2.8z"/></svg></a>
+      <a href="https://www.instagram.com/opoligon?igsi=bWgwd3Zwb21sb3po" target="_blank" rel="noopener" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+      <a href="#" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5H4.11V20h2.83V8.5zM5.53 4c-.97 0-1.63.66-1.63 1.5S4.56 7 5.53 7c.99 0 1.63-.65 1.63-1.5S6.52 4 5.53 4zM20 13.6c0-3-1.9-4.4-4.44-4.4-2.05 0-2.96 1.13-3.47 1.92V8.5H9.25c.04.87 0 11.5 0 11.5h2.84v-6.42c0-.34.02-.68.12-.93.27-.68.9-1.38 1.94-1.38 1.37 0 1.92 1.04 1.92 2.57V20H20v-6.4z"/></svg></a>
+    </div>
+  </section>
+
+  <!--
+    TEAM FOOTER CONFIG:
+    1) Sabse asaan tareeqa: ek group-photo banner image "team-photo.jpg" is folder mein rakh dein
+       aur neeche <img> ka src="team-photo.jpg" kar dein — poori team ek photo mein.
+    2) Ya phir individual members ki details TEAM_MEMBERS array (neeche JS mein) mein likhein,
+       yeh apne aap cards bana dega (avatar photo optional, warna initials dikhengi).
+  -->
+  <section class="section">
+    <h2 class="section-title">Our Team</h2>
+    <p class="section-desc">The people behind Opoligon's production &amp; quality.</p>
+    <div class="team-banner" id="teamBanner">
+      <div class="team-banner-fallback">
+        Team banner photo not added yet.<br>
+        Add an image named <b>team-photo.jpg</b> in this folder to display it here.
+      </div>
+    </div>
+    <div class="team-grid" id="teamGrid"></div>
+  </section>
+
+  <footer class="foot">© 2026 Opoligon &middot; Gujranwala, Pakistan</footer>
+</div>
+
+<!-- ================= FACTORY PRODUCTION DASHBOARD (embedded) ================= -->
+<div id="screen-factory" class="top-screen">
+  <div class="back-row"><button class="back-btn" data-back>&larr; Back to Home</button></div>
+  <section class="section" style="padding-bottom:0;">
+    <h1 class="screen-title">Factory Production Dashboard</h1>
+    <p class="screen-desc">Orders, production pipeline &amp; the permanent completed-orders archive.</p>
+  </section>
+  <!--
+    The full dashboard (stats, active orders, pipeline, archive) lives in its
+    own file, factory-dashboard.html, and is loaded here in an iframe once the
+    correct PIN has been entered. It no longer has its own login screen — this
+    PIN lock is the only gate now. Keep factory-dashboard.html in the same
+    folder as this file.
+  -->
+  <iframe id="factoryFrame" class="embed-frame" src="" title="Factory Production Dashboard" loading="lazy"></iframe>
+</div>
+
+<!-- ================= DIGITAL CATALOG (PDF) ================= -->
+<div id="screen-catalog" class="top-screen">
+  <div class="back-row"><button class="back-btn" data-back>&larr; Back to Home</button></div>
+  <section class="section">
+    <h1 class="screen-title">Digital Catalog</h1>
+    <p class="screen-desc">View or download our full product catalog as a PDF.</p>
+    <div class="pdf-wrap">
+      <object id="catalogPdfObject" data="" type="application/pdf" class="pdf-viewer">
+        <div class="pdf-fallback" id="pdfFallbackMsg">
+          Catalog PDF preview isn't available in this browser.<br>
+          Use the download button below to view it.
+        </div>
+      </object>
+      <div class="pdf-actions">
+        <a class="btn-gold" id="pdfOpenBtn" href="#" target="_blank" rel="noopener" style="text-align:center;">Open PDF</a>
+        <a class="btn-outline" id="pdfDownloadBtn" href="#" download>Download PDF</a>
+      </div>
+    </div>
+    <p class="section-desc" style="margin-top:12px;">
+      To publish your own catalog: place a file named <b>catalog.pdf</b> in this same folder
+      (or edit <span style="font-family:monospace;">CATALOG_PDF_URL</span> in the code to point to it).
+    </p>
+  </section>
+</div>
+
+<!-- ================= CCTV CAMERAS ================= -->
+<div id="screen-cctv" class="top-screen">
+  <div class="back-row"><button class="back-btn" data-back>&larr; Back to Home</button></div>
+  <section class="section">
+    <h1 class="screen-title">CCTV Cameras</h1>
+    <p class="screen-desc">Set each camera's stream URL in the code to go live. Empty URLs show "Feed not configured".</p>
+    <div class="cctv-grid" id="cctvGrid"></div>
+  </section>
+</div>
+
+<!-- ================= REVIEW BOX ================= -->
+<div id="screen-reviews" class="top-screen">
+  <div class="back-row"><button class="back-btn" data-back>&larr; Back to Home</button></div>
+  <section class="section">
+    <h1 class="screen-title">Review Box</h1>
+    <p class="screen-desc">Share your experience working with Opoligon.</p>
+    <div class="panel">
+      <form id="reviewForm">
+        <div class="field">
+          <label>Your Name</label>
+          <input type="text" id="rName" required placeholder="e.g. Ahmed Textiles">
+        </div>
+        <div class="field" style="margin-bottom:4px;">
+          <label>Rating</label>
+          <div class="stars-input" id="reviewStars">
+            <span data-val="1">&#9733;</span><span data-val="2">&#9733;</span><span data-val="3">&#9733;</span><span data-val="4">&#9733;</span><span data-val="5">&#9733;</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Your Review</label>
+          <textarea id="rComment" required placeholder="Tell us about your order, quality, and turnaround time..."></textarea>
+        </div>
+        <button type="submit" class="btn-gold" style="width:100%;">Submit Review</button>
+      </form>
+    </div>
+    <div id="reviewList" style="margin-top:18px;"></div>
+  </section>
+</div>
+
+<!-- ================= PIN KEYPAD MODAL (used for Factory & CCTV) ================= -->
+<div class="modal-overlay pin-modal" id="pinModalOverlay">
+  <div class="modal-box">
+    <div class="pin-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+    </div>
+    <h3 id="pinTitle" style="text-align:center;">Enter Secure PIN</h3>
+    <p class="pin-sub" id="pinSub">This area is restricted. Enter the 6-digit PIN to continue.</p>
+    <div class="pin-dots" id="pinDots">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <p class="pin-error" id="pinError"></p>
+    <div class="keypad" id="pinKeypad">
+      <button type="button" data-key="1">1</button>
+      <button type="button" data-key="2">2</button>
+      <button type="button" data-key="3">3</button>
+      <button type="button" data-key="4">4</button>
+      <button type="button" data-key="5">5</button>
+      <button type="button" data-key="6">6</button>
+      <button type="button" data-key="7">7</button>
+      <button type="button" data-key="8">8</button>
+      <button type="button" data-key="9">9</button>
+      <button type="button" class="ghost" id="pinCancelBtn">Cancel</button>
+      <button type="button" data-key="0">0</button>
+      <button type="button" class="ghost" id="pinBackspaceBtn">&larr;</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  try{
+
+  function escapeHtml(str){
+    return String(str==null?'':str).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+  function fmtDate(iso){
+    if(!iso) return '';
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+  }
+
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2600);
+  }
+
+  /* ---------- Screen navigation ---------- */
+  function showScreen(id){
+    var screens = document.querySelectorAll('.top-screen');
+    for(var i=0;i<screens.length;i++){ screens[i].style.display = 'none'; }
+    document.getElementById('home').style.display = 'none';
+    document.getElementById(id).style.display = '';
+    window.scrollTo(0,0);
+  }
+  function showHome(){
+    var screens = document.querySelectorAll('.top-screen');
+    for(var i=0;i<screens.length;i++){ screens[i].style.display = 'none'; }
+    document.getElementById('home').style.display = '';
+    window.scrollTo(0,0);
+  }
+
+  /* =====================================================================
+     PIN LOCK CONFIG
+     Ek hi 6-digit PIN dono secure buttons (Factory Dashboard & CCTV
+     Cameras) ke liye. Change karne ke liye bas neeche wali value edit karein.
+  ===================================================================== */
+  var SECURE_PIN = '764933';   // 6-digit PIN — Factory Dashboard + CCTV Cameras
+  var PIN_LENGTH = SECURE_PIN.length;
+  var PIN_SCREEN_MAP = { factory: 'screen-factory', cctv: 'screen-cctv' };
+  var PIN_TITLE_MAP  = { factory: 'Factory Dashboard', cctv: 'CCTV Cameras' };
+
+  var pinTarget = null;
+  var pinEntry = '';
+  var pinModal = document.getElementById('pinModalOverlay');
+  var pinDots = document.getElementById('pinDots').querySelectorAll('span');
+  var pinErrorEl = document.getElementById('pinError');
+  var pinDotsWrap = document.getElementById('pinDots');
+
+  var FACTORY_DASHBOARD_URL = 'factory-dashboard.html'; // keep this file in the same folder
+  var factoryFrameLoaded = false;
+
+  function openPinModal(target){
+    pinTarget = target;
+    pinEntry = '';
+    pinErrorEl.textContent = '';
+    document.getElementById('pinTitle').textContent = 'Enter Secure PIN';
+    document.getElementById('pinSub').textContent = (PIN_TITLE_MAP[target] || 'This area') + ' is restricted. Enter the ' + PIN_LENGTH + '-digit PIN to continue.';
+    updatePinDots();
+    pinModal.classList.add('show');
+  }
+  function closePinModal(){
+    pinModal.classList.remove('show');
+    pinTarget = null;
+    pinEntry = '';
+  }
+  function updatePinDots(){
+    for(var i=0;i<pinDots.length;i++){
+      pinDots[i].classList.toggle('filled', i < pinEntry.length);
+    }
+  }
+  function pinShakeAndReset(msg){
+    pinErrorEl.textContent = msg;
+    pinDotsWrap.classList.remove('shake');
+    void pinDotsWrap.offsetWidth; /* restart animation */
+    pinDotsWrap.classList.add('shake');
+    pinEntry = '';
+    updatePinDots();
+  }
+  function checkPin(){
+    if(!pinTarget) return;
+    if(pinEntry === SECURE_PIN){
+      var targetScreen = PIN_SCREEN_MAP[pinTarget];
+      closePinModal();
+      if(targetScreen === 'screen-factory' && !factoryFrameLoaded){
+        document.getElementById('factoryFrame').setAttribute('src', FACTORY_DASHBOARD_URL);
+        factoryFrameLoaded = true;
+      }
+      showScreen(targetScreen);
+    } else {
+      pinShakeAndReset('Incorrect PIN — try again');
+    }
+  }
+
+  var keypadEl = document.getElementById('pinKeypad');
+  keypadEl.addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-key]');
+    if(!btn) return;
+    if(pinEntry.length >= PIN_LENGTH) return;
+    pinEntry += btn.getAttribute('data-key');
+    updatePinDots();
+    if(pinEntry.length === PIN_LENGTH){
+      setTimeout(checkPin, 160);
+    }
+  });
+  document.getElementById('pinBackspaceBtn').addEventListener('click', function(){
+    pinEntry = pinEntry.slice(0, -1);
+    pinErrorEl.textContent = '';
+    updatePinDots();
+  });
+  document.getElementById('pinCancelBtn').addEventListener('click', closePinModal);
+  pinModal.addEventListener('click', function(e){
+    if(e.target === pinModal) closePinModal();
+  });
+
+  /* ---------- Tile click routing ---------- */
+  document.getElementById('tileFactory').addEventListener('click', function(){ openPinModal('factory'); });
+  document.getElementById('tileCatalog').addEventListener('click', function(){ showScreen('screen-catalog'); });
+  document.getElementById('tileCctv').addEventListener('click', function(){ openPinModal('cctv'); });
+  document.getElementById('tileReviews').addEventListener('click', function(){ showScreen('screen-reviews'); });
+  var backButtons = document.querySelectorAll('[data-back]');
+  for(var bi=0; bi<backButtons.length; bi++){
+    backButtons[bi].addEventListener('click', showHome);
+  }
+
+  /* ================= CAROUSEL ================= */
+  (function(){
+    var track = document.getElementById('carouselTrack');
+    var dots = document.querySelectorAll('#carDots span');
+    var index = 0;
+    var slideCount = 3;
+    var autoTimer = null;
+
+    function render(){
+      track.style.transform = 'translateX(-' + (index * (100/slideCount)) + '%)';
+      for(var i=0;i<dots.length;i++){ dots[i].classList.toggle('active', i===index); }
+    }
+    function next(){ index = (index+1) % slideCount; render(); }
+    function prev(){ index = (index-1+slideCount) % slideCount; render(); }
+    function startAuto(){ stopAuto(); autoTimer = setInterval(next, 4200); }
+    function stopAuto(){ if(autoTimer) clearInterval(autoTimer); }
+
+    document.getElementById('carNext').addEventListener('click', function(){ next(); startAuto(); });
+    document.getElementById('carPrev').addEventListener('click', function(){ prev(); startAuto(); });
+
+    var startX = 0, dx = 0, dragging = false;
+    var carEl = document.getElementById('carousel');
+    carEl.addEventListener('touchstart', function(e){
+      dragging = true; startX = e.touches[0].clientX; dx = 0; stopAuto();
+    }, {passive:true});
+    carEl.addEventListener('touchmove', function(e){
+      if(!dragging) return;
+      dx = e.touches[0].clientX - startX;
+    }, {passive:true});
+    carEl.addEventListener('touchend', function(){
+      if(!dragging) return;
+      dragging = false;
+      if(dx > 40) prev();
+      else if(dx < -40) next();
+      startAuto();
+    });
+
+    render();
+    startAuto();
+  })();
+
+  /* =====================================================================
+     TRENDING PRODUCTS CONFIG
+     16 items chahiye (2 rows x 8). Har item mein "img" field mein apni
+     photo ka filename/URL daal dein — khali chorne par ek placeholder
+     icon dikhega.
+  ===================================================================== */
+  var TRENDING_ITEMS = [
+    {name:"Soccer Fan Scarves", desc:"Custom club colors & crests", img:""},
+    {name:"Knit Beanies", desc:"Embroidered cuff logos", img:""},
+    {name:"Team Jerseys", desc:"Full sublimation printing", img:""},
+    {name:"Knit Gloves", desc:"Thermal-lined options", img:""},
+    {name:"Winter Balaclavas", desc:"Fleece-lined, custom colors", img:""},
+    {name:"Corporate Polos", desc:"Pique knit, embroidered logo", img:""},
+    {name:"Fleece Hoodies", desc:"Custom prints & labeling", img:""},
+    {name:"Crew Sweaters", desc:"Seasonal private-label runs", img:""},
+    {name:"Club Track Suits", desc:"Full team kits, any size run", img:""},
+    {name:"Neck Warmers", desc:"Knit, club colors & crest", img:""},
+    {name:"Bucket Hats", desc:"Embroidered, bulk pricing", img:""},
+    {name:"Baby Beanies", desc:"Soft-touch, mini club kits", img:""},
+    {name:"Wristbands", desc:"Woven & embroidered logos", img:""},
+    {name:"Supporter Flags", desc:"Custom print, any size", img:""},
+    {name:"Training Bibs", desc:"Mesh, numbered sets", img:""},
+    {name:"Zip-Up Jackets", desc:"Lined, custom team colors", img:""}
+  ];
+  function productCardHtml(item, badge){
+    var thumb = item.img
+      ? '<img src="' + escapeHtml(item.img) + '" alt="' + escapeHtml(item.name) + '">'
+      : '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>';
+    return '<div class="product-card">'
+      + '<div class="product-thumb">' + (badge ? '<span class="product-badge">' + escapeHtml(badge) + '</span>' : '') + thumb + '</div>'
+      + '<h4>' + escapeHtml(item.name) + '</h4>'
+      + '<p>' + escapeHtml(item.desc) + '</p>'
+      + '</div>';
+  }
+  var row1Items = TRENDING_ITEMS.slice(0, 8);
+  var row2Items = TRENDING_ITEMS.slice(8, 16);
+  document.getElementById('trendingRow1').innerHTML = row1Items.map(function(item){ return productCardHtml(item, 'Trending'); }).join('');
+  document.getElementById('trendingRow2').innerHTML = row2Items.map(function(item){ return productCardHtml(item, 'Trending'); }).join('');
+
+  /* =====================================================================
+     DIGITAL CATALOG CONFIG
+     Apni catalog PDF ka filename/URL yahan set karein. Simplest tareeqa:
+     is HTML file ke sath "catalog.pdf" naam ki file isi folder mein rakh dein.
+  ===================================================================== */
+  var CATALOG_PDF_URL = 'catalog.pdf';
+  (function(){
+    var obj = document.getElementById('catalogPdfObject');
+    obj.setAttribute('data', CATALOG_PDF_URL);
+    document.getElementById('pdfOpenBtn').setAttribute('href', CATALOG_PDF_URL);
+    document.getElementById('pdfDownloadBtn').setAttribute('href', CATALOG_PDF_URL);
+  })();
+
+  /* ================= CCTV ================= */
+  var CCTV_CAMERAS = [
+    {name:"Knitting Floor", location:"Building A - Floor 1", streamUrl:""},
+    {name:"Stitching & QC", location:"Building A - Floor 2", streamUrl:""},
+    {name:"Packing Area", location:"Building B", streamUrl:""},
+    {name:"Main Gate", location:"Entrance", streamUrl:""},
+    {name:"Warehouse", location:"Building C", streamUrl:""}
+  ];
+  document.getElementById('cctvGrid').innerHTML = CCTV_CAMERAS.map(function(cam){
+    var feed = cam.streamUrl
+      ? '<video src="' + escapeHtml(cam.streamUrl) + '" autoplay muted playsinline controls style="width:100%;height:100%;object-fit:cover;"></video>'
+      : '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span>Feed not configured</span>';
+    return '<div class="cctv-card">'
+      + '<div class="cctv-feed"><span class="rec-dot">' + (cam.streamUrl ? 'LIVE' : 'OFFLINE') + '</span>' + feed + '</div>'
+      + '<h4>' + escapeHtml(cam.name) + '</h4>'
+      + '<div class="meta">' + escapeHtml(cam.location) + '</div>'
+      + '</div>';
+  }).join('');
+
+  /* =====================================================================
+     TEAM FOOTER CONFIG
+     Har member ke liye name, role aur (optional) photo add karein.
+     "avatar" khali ho to naam ke initials dikhengi.
+  ===================================================================== */
+  var TEAM_MEMBERS = [
+    {name:"Owner / Director", role:"Founder", avatar:""},
+    {name:"Production Head", role:"Factory Floor", avatar:""},
+    {name:"Quality Control", role:"QC Lead", avatar:""},
+    {name:"Sales & Orders", role:"Client Relations", avatar:""}
+  ];
+  (function(){
+    var TEAM_PHOTO_URL = 'team-photo.jpg';
+    var banner = document.getElementById('teamBanner');
+    var testImg = new Image();
+    testImg.onload = function(){
+      banner.innerHTML = '<img class="team-banner-img" src="' + escapeHtml(TEAM_PHOTO_URL) + '" alt="Opoligon Team">';
+    };
+    testImg.onerror = function(){ /* keep fallback message already in DOM */ };
+    testImg.src = TEAM_PHOTO_URL;
+
+    function initials(name){
+      var parts = String(name||'').trim().split(/\s+/);
+      var a = parts[0] ? parts[0].charAt(0) : '';
+      var b = parts.length>1 ? parts[parts.length-1].charAt(0) : '';
+      return (a+b).toUpperCase() || '?';
+    }
+    document.getElementById('teamGrid').innerHTML = TEAM_MEMBERS.map(function(m){
+      var avatar = m.avatar
+        ? '<img src="' + escapeHtml(m.avatar) + '" alt="' + escapeHtml(m.name) + '">'
+        : initials(m.name);
+      return '<div class="team-member">'
+        + '<div class="team-avatar">' + avatar + '</div>'
+        + '<b>' + escapeHtml(m.name) + '</b>'
+        + '<span>' + escapeHtml(m.role) + '</span>'
+        + '</div>';
+    }).join('');
+  })();
+
+  /* ================= REVIEW BOX (localStorage) ================= */
+  var REVIEWS_KEY = 'opoligon_reviews_v1';
+  var selectedRating = 0;
+
+  function loadReviews(){
+    try{
+      var raw = localStorage.getItem(REVIEWS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ return []; }
+  }
+  function saveReviews(list){
+    try{ localStorage.setItem(REVIEWS_KEY, JSON.stringify(list)); }catch(e){}
+  }
+  var reviews = loadReviews();
+
+  function renderReviews(){
+    var wrap = document.getElementById('reviewList');
+    if(!reviews.length){
+      wrap.innerHTML = '<p class="empty-note">No reviews yet — be the first to share your experience.</p>';
+      return;
+    }
+    var sorted = reviews.slice().sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); });
+    wrap.innerHTML = sorted.map(function(r){
+      var full = Number(r.rating)||0;
+      var stars = '';
+      for(var i=1;i<=5;i++){ stars += (i<=full ? '&#9733;' : '&#9734;'); }
+      return '<div class="review-item">'
+        + '<div class="r-top"><span class="r-name">' + escapeHtml(r.name) + '</span><span class="r-date">' + escapeHtml(fmtDate(r.createdAt)) + '</span></div>'
+        + '<div class="r-stars">' + stars + '</div>'
+        + '<div class="r-text">' + escapeHtml(r.comment) + '</div>'
+        + '</div>';
+    }).join('');
+  }
+  var starEls = document.querySelectorAll('#reviewStars span');
+  for(var si=0; si<starEls.length; si++){
+    starEls[si].addEventListener('click', function(){
+      selectedRating = parseInt(this.getAttribute('data-val'), 10);
+      for(var j=0;j<starEls.length;j++){
+        starEls[j].classList.toggle('active', parseInt(starEls[j].getAttribute('data-val'),10) <= selectedRating);
+      }
+    });
+  }
+  document.getElementById('reviewForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!selectedRating){ showToast('Please select a star rating'); return; }
+    var review = {
+      id: uid(),
+      name: document.getElementById('rName').value.trim(),
+      rating: selectedRating,
+      comment: document.getElementById('rComment').value.trim(),
+      createdAt: new Date().toISOString()
+    };
+    reviews.push(review);
+    saveReviews(reviews);
+    this.reset();
+    selectedRating = 0;
+    for(var j=0;j<starEls.length;j++){ starEls[j].classList.remove('active'); }
+    renderReviews();
+    showToast('Review submitted — thank you!');
+  });
+  renderReviews();
+
+  /* ---------- Service worker registration (PWA offline support) ---------- */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    });
+  }
+
+  }catch(err){
+    console.error('Opoligon app error:', err);
+    var el = document.getElementById('fatalError');
+    if(el){
+      el.style.display = 'block';
+      el.textContent = 'Something went wrong while starting the app.\n\n'
+        + 'Technical detail: ' + (err && err.message ? err.message : err) + '\n\n'
+        + 'Please screenshot this exact message and send it back.';
+      el.addEventListener('click', function(){ el.style.display = 'none'; }, {once:true});
+    }
+  }
+})();
+</script>
+</body>
+</html>
