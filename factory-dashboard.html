@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Opoligon — Order Management &amp; Production Dashboard</title>
+<meta name="description" content="Opoligon Order Management & Factory Production Dashboard">
+<meta name="theme-color" content="#2b1219">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas:#2b1219;
+    --canvas-deep:#200f14;
+    --surface:#381822;
+    --surface-2:#452430;
+    --surface-3:#502a38;
+    --gold:#c7b27c;
+    --gold-bright:#ecdcae;
+    --gold-dim:#8f7d59;
+    --border:rgba(199,178,124,0.16);
+    --border-strong:rgba(199,178,124,0.32);
+    --stitch:rgba(199,178,124,0.38);
+    --ok:#8ea77e;
+    --ok-bg:rgba(142,167,126,0.14);
+    --warn:#cf9d4c;
+    --warn-bg:rgba(207,157,76,0.14);
+    --danger:#b5645c;
+    --danger-bg:rgba(181,100,92,0.14);
+    --radius:14px;
+    --font-display:'Manrope',sans-serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--canvas-deep);
+    color:var(--gold);
+    font-family:var(--font-body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--gold);color:var(--canvas-deep);}
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  /* ---------- Scrollbar ---------- */
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px;}
+
+  /* ---------- App Shell ---------- */
+  #app{max-width:1180px;margin:0 auto;min-height:100vh;background:var(--canvas);border-left:1px solid var(--border);border-right:1px solid var(--border);}
+
+  /* ---------- Header ---------- */
+  header.top{
+    position:sticky;top:0;z-index:40;
+    background:linear-gradient(180deg, var(--canvas) 0%, var(--canvas) 85%, transparent);
+    background-color:var(--canvas);
+    border-bottom:1px solid var(--border);
+    padding:16px 20px 0 20px;
+  }
+  .brand-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand svg{display:block;flex-shrink:0;}
+  .brand-word{
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:22px;
+    letter-spacing:2.5px;
+    color:var(--gold);
+    line-height:1;
+  }
+  .brand-sub{
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:1.5px;
+    color:var(--gold-dim);
+    text-transform:uppercase;
+    margin-top:3px;
+  }
+  .new-order-btn{
+    display:flex;align-items:center;gap:6px;
+    background:var(--gold);color:var(--canvas-deep);
+    border:none;border-radius:10px;
+    padding:10px 16px;
+    font-family:var(--font-display);font-weight:700;font-size:13px;
+    letter-spacing:0.3px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(199,178,124,0.18);
+    transition:transform .15s ease, box-shadow .15s ease;
+    white-space:nowrap;
+  }
+  .new-order-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(199,178,124,0.28);}
+  .new-order-btn:active{transform:translateY(0);}
+
+  nav.tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:0;scrollbar-width:none;}
+  nav.tabs::-webkit-scrollbar{display:none;}
+  nav.tabs button{
+    background:none;border:none;color:var(--gold-dim);
+    font-family:var(--font-body);font-weight:600;font-size:13.5px;
+    padding:11px 14px 13px 14px;cursor:pointer;
+    border-bottom:2px solid transparent;
+    white-space:nowrap;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  nav.tabs button:hover{color:var(--gold-bright);}
+  nav.tabs button.active{color:var(--gold-bright);border-bottom-color:var(--gold);}
+
+  main{padding:22px 20px 60px 20px;}
+  .view{display:none;animation:fadeIn .25s ease;}
+  .view.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  h1.view-title{font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--gold-bright);margin:0 0 4px 0;letter-spacing:0.3px;}
+  p.view-desc{font-family:var(--font-body);font-size:13px;color:var(--gold-dim);margin:0 0 20px 0;}
+
+  /* ---------- Summary Cards ---------- */
+  .cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px;}
+  @media(max-width:820px){.cards-grid{grid-template-columns:repeat(2,1fr);}}
+
+  /* ---------- Desktop enhancements ---------- */
+  @media(min-width:1300px){
+    #app{max-width:1440px;}
+    main{padding:26px 36px 70px 36px;}
+    header.top{padding:18px 36px 0 36px;}
+    .pipeline-wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow-x:visible;}
+    .pipeline-col{flex:none;min-width:0;}
+    .cards-grid{gap:16px;}
+    .stat-card .value{font-size:32px;}
+  }
+  @media(min-width:900px) and (max-width:1299px){
+    .pipeline-wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow-x:visible;}
+    .pipeline-col{flex:none;min-width:0;}
+  }
+  @media(min-width:900px){
+    nav.tabs button{padding:12px 18px 14px 18px;font-size:14px;}
+    table{font-size:13.5px;}
+    .new-order-btn{padding:11px 20px;}
+  }
+  .stat-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-top:2px dashed var(--stitch);
+    border-radius:var(--radius);
+    padding:16px 16px 14px 16px;
+    position:relative;
+    overflow:hidden;
+  }
+  .stat-card .label{font-size:11.5px;color:var(--gold-dim);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:8px;}
+  .stat-card .value{font-family:var(--font-mono);font-weight:600;font-size:28px;color:var(--gold-bright);line-height:1;}
+  .stat-card .foot{font-size:11.5px;color:var(--gold-dim);margin-top:8px;}
+  .stat-card .icon{position:absolute;top:14px;right:14px;opacity:0.55;}
+
+  /* ---------- Section blocks ---------- */
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px;}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap;}
+  .panel-head h2{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gold-bright);margin:0;}
+  .link-btn{background:none;border:none;color:var(--gold-dim);font-size:12.5px;cursor:pointer;font-weight:600;}
+  .link-btn:hover{color:var(--gold-bright);}
+
+  /* ---------- Toolbar (search/filter) ---------- */
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .toolbar input[type="text"], .toolbar select{
+    background:var(--surface);border:1px solid var(--border);color:var(--gold-bright);
+    border-radius:9px;padding:9px 12px;font-size:13px;font-family:var(--font-body);
+    outline:none;
+  }
+  .toolbar input[type="text"]{flex:1;min-width:180px;}
+  .toolbar input::placeholder{color:var(--gold-dim);}
+  .toolbar select{cursor:pointer;}
+  .toolbar input:focus, .toolbar select:focus{border-color:var(--border-strong);}
+
+  /* ---------- Table ---------- */
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{
+    text-align:left;font-family:var(--font-body);font-weight:600;font-size:11px;
+    text-transform:uppercase;letter-spacing:0.6px;color:var(--gold-dim);
+    padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;
+  }
+  tbody td{padding:11px 10px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap;}
+  tbody tr{cursor:pointer;transition:background .12s ease;}
+  tbody tr:hover{background:var(--surface-2);}
+  .mono{font-family:var(--font-mono);color:var(--gold-bright);font-size:12.5px;}
+  .empty-row td{text-align:center;padding:34px 10px;color:var(--gold-dim);cursor:default;}
+  .empty-row:hover{background:none;}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.2px;white-space:nowrap;}
+  .badge.paid{background:var(--ok-bg);color:var(--ok);}
+  .badge.advance{background:var(--warn-bg);color:var(--warn);}
+  .badge.unpaid{background:var(--danger-bg);color:var(--danger);}
+  .badge.stage{background:var(--surface-3);color:var(--gold-bright);}
+  .badge.overdue{background:var(--danger-bg);color:var(--danger);}
+
+  /* ---------- Pipeline (Kanban) ---------- */
+  .pipeline-wrap{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;}
+  .pipeline-col{
+    flex:0 0 250px;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:12px;min-height:120px;
+  }
+  .pipeline-col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--stitch);}
+  .pipeline-col-head .name{font-family:var(--font-display);font-weight:700;font-size:12.5px;color:var(--gold-bright);letter-spacing:0.3px;}
+  .pipeline-col-head .count{font-family:var(--font-mono);font-size:11px;color:var(--gold-dim);background:var(--surface-3);border-radius:20px;padding:2px 8px;}
+  .pipeline-card{
+    background:var(--surface-2);border:1px solid var(--border);border-radius:10px;
+    padding:10px 11px;margin-bottom:9px;cursor:pointer;transition:transform .12s ease, border-color .12s ease;
+  }
+  .pipeline-card:hover{transform:translateY(-1px);border-color:var(--border-strong);}
+  .pipeline-card .pc-id{font-family:var(--font-mono);font-size:10.5px;color:var(--gold-dim);}
+  .pipeline-card .pc-client{font-family:var(--font-body);font-weight:600;font-size:13px;color:var(--gold-bright);margin:3px 0 2px 0;}
+  .pipeline-card .pc-meta{font-size:11px;color:var(--gold-dim);}
+  .pipeline-col-empty{font-size:11.5px;color:var(--gold-dim);text-align:center;padding:14px 4px;opacity:0.7;}
+  .stage-actions{display:flex;gap:6px;margin-top:8px;}
+  .stage-actions button{flex:1;background:var(--surface-3);border:1px solid var(--border);color:var(--gold-bright);border-radius:7px;font-size:10.5px;padding:5px 4px;cursor:pointer;font-weight:600;}
+  .stage-actions button:hover{border-color:var(--border-strong);}
+  .stage-actions button:disabled{opacity:0.3;cursor:not-allowed;}
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(15,6,8,0.68);backdrop-filter:blur(2px);
+    display:none;align-items:flex-start;justify-content:center;z-index:100;padding:26px 14px;overflow-y:auto;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--surface);border:1px solid var(--border-strong);border-radius:16px;
+    max-width:560px;width:100%;padding:22px;margin-top:14px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  }
+  .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .modal-head h2{font-family:var(--font-display);font-size:17px;color:var(--gold-bright);margin:0;}
+  .modal-close{background:none;border:none;color:var(--gold-dim);font-size:20px;cursor:pointer;line-height:1;padding:4px;}
+  .modal-close:hover{color:var(--gold-bright);}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .form-grid .full{grid-column:1/-1;}
+  @media(max-width:520px){.form-grid{grid-template-columns:1fr;}}
+  .field label{display:block;font-size:11.5px;color:var(--gold-dim);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+  .field input, .field select, .field textarea{
+    width:100%;background:var(--canvas);border:1px solid var(--border);color:var(--gold-bright);
+    border-radius:9px;padding:9px 11px;font-size:13.5px;font-family:var(--font-body);outline:none;
+  }
+  .field textarea{resize:vertical;min-height:56px;}
+  .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--border-strong);}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+  .btn-secondary{background:none;border:1px solid var(--border);color:var(--gold-bright);border-radius:9px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;}
+  .btn-secondary:hover{border-color:var(--border-strong);}
+  .btn-primary{background:var(--gold);border:none;color:var(--canvas-deep);border-radius:9px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;}
+  .btn-primary:hover{box-shadow:0 4px 14px rgba(199,178,124,0.25);}
+  .btn-danger{background:none;border:1px solid var(--danger);color:var(--danger);border-radius:9px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;margin-right:auto;}
+  .btn-danger:hover{background:var(--danger-bg);}
+
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin-bottom:6px;}
+  .detail-grid .full{grid-column:1/-1;}
+  .detail-item .k{font-size:10.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--gold-dim);font-weight:600;margin-bottom:3px;}
+  .detail-item .v{font-size:13.5px;color:var(--gold-bright);}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--surface-3);border:1px solid var(--border-strong);color:var(--gold-bright);
+    padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:200;
+    opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .footer-note{text-align:center;color:var(--gold-dim);font-size:11px;padding:18px 0 4px 0;font-family:var(--font-mono);letter-spacing:0.4px;}
+
+  /* ---------- Header sync status (no login UI) ---------- */
+  .user-row{display:flex;align-items:center;gap:8px;}
+  .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);flex-shrink:0;}
+  .sync-dot.offline{background:var(--danger);}
+  .sync-label{font-size:11.5px;color:var(--gold-dim);white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<!--
+  This dashboard has no login screen of its own — access is already gated
+  by the secure PIN lock in the main Opoligon app that embeds this page.
+  It still signs in to Firebase anonymously in the background (see script
+  below) purely so Firestore security rules that require an authenticated
+  request keep working; no credentials are ever shown to the user here.
+-->
+<div id="app">
+
+  <header class="top">
+    <div class="brand-row">
+      <div class="brand">
+        <img src="icon-192.png" width="38" height="38" alt="Opoligon" style="border-radius:50%;display:block;">
+        <div>
+          <div class="brand-word">OPOLIGON</div>
+          <div class="brand-sub">Factory Production Dashboard</div>
+        </div>
+      </div>
+      <button class="new-order-btn" id="btnNewOrder">+ New Order</button>
+    </div>
+    <div class="user-row" style="justify-content:flex-end;margin-bottom:10px;">
+      <span class="sync-dot" id="syncDot"></span>
+      <span class="sync-label" id="syncLabel">Connecting…</span>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-view="dashboard" class="active">Dashboard</button>
+      <button data-view="active">Active Orders</button>
+      <button data-view="pipeline">Production Pipeline</button>
+      <button data-view="archive">Completed Archive</button>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- DASHBOARD -->
+    <section class="view active" id="view-dashboard">
+      <h1 class="view-title">Overview</h1>
+      <p class="view-desc">A daily snapshot of what's on the floor.</p>
+
+      <div class="cards-grid">
+        <div class="stat-card">
+          <div class="label">Active Orders</div>
+          <div class="value" id="statActive">0</div>
+          <div class="foot">Currently in production</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Completed Orders</div>
+          <div class="value" id="statCompleted">0</div>
+          <div class="foot">All-time delivered</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Pending Deliveries</div>
+          <div class="value" id="statPending">0</div>
+          <div class="foot">Due today or overdue</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Total Production Output</div>
+          <div class="value" id="statOutput">0</div>
+          <div class="foot">Pieces completed</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Pipeline at a Glance</h2>
+        </div>
+        <div id="pipelineGlance"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Recent Orders</h2>
+          <button class="link-btn" data-goto="active">View all →</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order ID</th><th>Client</th><th>Product</th><th>Qty</th><th>Deadline</th><th>Stage</th><th>Payment</th></tr></thead>
+            <tbody id="recentOrdersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTIVE ORDERS -->
+    <section class="view" id="view-active">
+      <h1 class="view-title">Active Orders</h1>
+      <p class="view-desc">Every order currently in the factory, not yet completed.</p>
+      <div class="toolbar">
+        <input type="text" id="activeSearch" placeholder="Search by client, order ID, or product...">
+        <select id="activeStageFilter">
+          <option value="">All stages</option>
+          <option value="design">Pending / Design</option>
+          <option value="knitting">Knitting</option>
+          <option value="qc">Stitching / QC</option>
+          <option value="packing">Packing</option>
+        </select>
+        <select id="activePaymentFilter">
+          <option value="">All payments</option>
+          <option value="Unpaid">Unpaid</option>
+          <option value="Advance Paid">Advance Paid</option>
+          <option value="Paid">Paid</option>
+        </select>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order ID</th><th>Client</th><th>Product</th><th>Qty</th><th>Order Date</th><th>Deadline</th><th>Stage</th><th>Payment</th></tr></thead>
+            <tbody id="activeOrdersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCTION PIPELINE -->
+    <section class="view" id="view-pipeline">
+      <h1 class="view-title">Production Pipeline</h1>
+      <p class="view-desc">Move orders forward as they progress through the floor.</p>
+      <div class="pipeline-wrap" id="pipelineWrap"></div>
+    </section>
+
+    <!-- COMPLETED ARCHIVE -->
+    <section class="view" id="view-archive">
+      <h1 class="view-title">Completed Archive</h1>
+      <p class="view-desc">A permanent record of every order delivered.</p>
+      <div class="toolbar">
+        <input type="text" id="archiveSearch" placeholder="Search completed orders...">
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order ID</th><th>Client</th><th>Product</th><th>Qty</th><th>Order Date</th><th>Delivered</th><th>Payment</th></tr></thead>
+            <tbody id="archiveOrdersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">OPOLIGON · production records stored locally on this device</p>
+  </main>
+</div>
+
+<!-- NEW ORDER MODAL -->
+<div class="modal-overlay" id="orderModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="orderModalTitle">New Order</h2>
+      <button class="modal-close" id="closeOrderModal">&times;</button>
+    </div>
+    <form id="orderForm">
+      <div class="form-grid">
+        <div class="field"><label>Order ID</label><input type="text" id="fOrderId" required></div>
+        <div class="field"><label>Client / Brand Name</label><input type="text" id="fClient" required></div>
+
+        <div class="field">
+          <label>Product Type</label>
+          <input type="text" id="fProduct" list="productTypeList" placeholder="Type or choose..." required>
+          <datalist id="productTypeList">
+            <option value="Custom Scarves">
+            <option value="Beanies">
+            <option value="Jerseys">
+            <option value="Polo Shirts">
+            <option value="Sweaters">
+            <option value="Hoodies">
+            <option value="Gloves">
+            <option value="Balaclava">
+          </datalist>
+        </div>
+        <div class="field"><label>Quantity</label><input type="number" id="fQty" min="1" required></div>
+
+        <div class="field full"><label>Sizes</label><input type="text" id="fSizes" placeholder="e.g. S-40, M-60, L-30"></div>
+        <div class="field full"><label>Colors</label><input type="text" id="fColors" placeholder="e.g. Maroon, Gold, Charcoal"></div>
+        <div class="field full"><label>Yarn Details</label><textarea id="fYarn" placeholder="Yarn type, GSM, blend, etc."></textarea></div>
+
+        <div class="field"><label>Order Date</label><input type="date" id="fOrderDate" required></div>
+        <div class="field"><label>Delivery Deadline</label><input type="date" id="fDeadline" required></div>
+
+        <div class="field">
+          <label>Payment Status</label>
+          <select id="fPayment" required>
+            <option>Unpaid</option>
+            <option>Advance Paid</option>
+            <option>Paid</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Stage</label>
+          <select id="fStage">
+            <option value="design">Pending / Design</option>
+            <option value="knitting">Knitting</option>
+            <option value="qc">Stitching / QC</option>
+            <option value="packing">Packing</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions" id="orderFormActions">
+        <button type="button" class="btn-danger" id="deleteOrderBtn" style="display:none;">Delete Order</button>
+        <button type="button" class="btn-secondary" id="cancelOrderBtn">Cancel</button>
+        <button type="submit" class="btn-primary" id="saveOrderBtn">Save Order</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ===================== FIREBASE SETUP ===================== -->
+<!-- 1. Replace the values below with YOUR Firebase project's config
+     (Firebase Console → Project Settings → General → Your apps → SDK setup and configuration). -->
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCscp0MYvgXUBoIfFxUpqcu0q5mosqn-YM",
+    authDomain: "opoligon-app.firebaseapp.com",
+    projectId: "opoligon-app",
+    storageBucket: "opoligon-app.firebasestorage.app",
+    messagingSenderId: "215566428629",
+    appId: "1:215566428629:web:7d0305142207a35b01355c",
+    measurementId: "G-KDTT0GGY8X"
+  };
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- ===================== END FIREBASE SETUP ===================== -->
+
+<script>
+(function(){
+  "use strict";
+  const STAGES = [
+    {key:"design", label:"Pending / Design"},
+    {key:"knitting", label:"Knitting"},
+    {key:"qc", label:"Stitching / QC"},
+    {key:"packing", label:"Packing"},
+    {key:"completed", label:"Completed"}
+  ];
+  const stageLabel = k => (STAGES.find(s=>s.key===k)||{}).label || k;
+
+  /* ---------- Firebase Init ---------- */
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const ordersCol = db.collection("orders");
+
+  let orders = [];
+  let unsubscribeOrders = null;
+  let currentUser = null;
+
+  function startOrdersListener(){
+    if(unsubscribeOrders) return;
+    unsubscribeOrders = ordersCol.orderBy("createdAt", "desc").onSnapshot(
+      (snap)=>{
+        orders = snap.docs.map(d=> Object.assign({id:d.id}, d.data()));
+        document.getElementById('syncDot').classList.remove('offline');
+        document.getElementById('syncLabel').textContent = 'Synced';
+        renderAll();
+      },
+      (err)=>{
+        console.error("Firestore sync error:", err);
+        document.getElementById('syncDot').classList.add('offline');
+        document.getElementById('syncLabel').textContent = 'Sync error';
+        showToast('Sync error — check Firestore rules/config');
+      }
+    );
+  }
+  function stopOrdersListener(){
+    if(unsubscribeOrders){ unsubscribeOrders(); unsubscribeOrders = null; }
+    orders = [];
+  }
+
+  async function createOrder(data){
+    await ordersCol.add(Object.assign({
+      createdAt: new Date().toISOString(),
+      completedAt: data.stage === 'completed' ? todayISO() : null,
+      createdBy: currentUser ? currentUser.uid : null
+    }, data));
+  }
+  async function updateOrder(id, data, prevStage){
+    const patch = Object.assign({}, data);
+    if(data.stage === 'completed' && prevStage !== 'completed'){
+      patch.completedAt = todayISO();
+    }
+    if(data.stage !== 'completed'){
+      patch.completedAt = null;
+    }
+    await ordersCol.doc(id).update(patch);
+  }
+  async function deleteOrder(id){
+    await ordersCol.doc(id).delete();
+  }
+  async function moveOrderStage(id, target){
+    const patch = { stage: target };
+    patch.completedAt = target === 'completed' ? todayISO() : null;
+    await ordersCol.doc(id).update(patch);
+  }
+
+  /* ---------- Helpers ---------- */
+  function todayISO(){ return new Date().toISOString().slice(0,10); }
+  function fmtDate(iso){
+    if(!iso) return '—';
+    const d = new Date(iso + 'T00:00:00');
+    if(isNaN(d)) return iso;
+    return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+  }
+  function isOverdue(o){
+    return o.stage !== 'completed' && o.deadline && o.deadline < todayISO();
+  }
+  function paymentBadgeClass(p){
+    if(p === 'Paid') return 'paid';
+    if(p === 'Advance Paid') return 'advance';
+    return 'unpaid';
+  }
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast._h);
+    showToast._h = setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+  function nextOrderIdSuggestion(){
+    const nums = orders.map(o=>{
+      const m = /(\d+)$/.exec(o.orderId||'');
+      return m ? parseInt(m[1],10) : 0;
+    });
+    const max = nums.length ? Math.max(...nums) : 1000;
+    return 'OPX-' + (max + 1);
+  }
+
+  /* ---------- Tab Navigation ---------- */
+  const tabButtons = document.querySelectorAll('nav.tabs button');
+  function setView(name){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+name).classList.add('active');
+    tabButtons.forEach(b=>b.classList.toggle('active', b.dataset.view === name));
+    renderAll();
+  }
+  tabButtons.forEach(b=> b.addEventListener('click', ()=> setView(b.dataset.view)));
+  document.querySelectorAll('[data-goto]').forEach(b=>{
+    b.addEventListener('click', ()=> setView(b.dataset.goto));
+  });
+
+  /* ---------- Modal (New / Edit Order) ---------- */
+  const overlay = document.getElementById('orderModalOverlay');
+  const form = document.getElementById('orderForm');
+  const deleteBtn = document.getElementById('deleteOrderBtn');
+  let editingId = null;
+
+  function openModal(order){
+    editingId = order ? order.id : null;
+    document.getElementById('orderModalTitle').textContent = order ? 'Edit Order' : 'New Order';
+    deleteBtn.style.display = order ? 'inline-flex' : 'none';
+
+    document.getElementById('fOrderId').value = order ? order.orderId : nextOrderIdSuggestion();
+    document.getElementById('fClient').value = order ? order.client : '';
+    document.getElementById('fProduct').value = order ? order.productType : '';
+    document.getElementById('fQty').value = order ? order.quantity : '';
+    document.getElementById('fSizes').value = order ? order.sizes : '';
+    document.getElementById('fColors').value = order ? order.colors : '';
+    document.getElementById('fYarn').value = order ? order.yarnDetails : '';
+    document.getElementById('fOrderDate').value = order ? order.orderDate : todayISO();
+    document.getElementById('fDeadline').value = order ? order.deadline : '';
+    document.getElementById('fPayment').value = order ? order.paymentStatus : 'Unpaid';
+    document.getElementById('fStage').value = order ? order.stage : 'design';
+
+    overlay.classList.add('open');
+  }
+  function closeModal(){
+    overlay.classList.remove('open');
+    editingId = null;
+    form.reset();
+  }
+  document.getElementById('btnNewOrder').addEventListener('click', ()=> openModal(null));
+  document.getElementById('closeOrderModal').addEventListener('click', closeModal);
+  document.getElementById('cancelOrderBtn').addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeModal(); });
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const data = {
+      orderId: document.getElementById('fOrderId').value.trim(),
+      client: document.getElementById('fClient').value.trim(),
+      productType: document.getElementById('fProduct').value,
+      quantity: parseInt(document.getElementById('fQty').value, 10) || 0,
+      sizes: document.getElementById('fSizes').value.trim(),
+      colors: document.getElementById('fColors').value.trim(),
+      yarnDetails: document.getElementById('fYarn').value.trim(),
+      orderDate: document.getElementById('fOrderDate').value,
+      deadline: document.getElementById('fDeadline').value,
+      paymentStatus: document.getElementById('fPayment').value,
+      stage: document.getElementById('fStage').value
+    };
+
+    const saveBtn = document.getElementById('saveOrderBtn');
+    saveBtn.disabled = true;
+    try{
+      if(editingId){
+        const existing = orders.find(o=>o.id === editingId);
+        await updateOrder(editingId, data, existing ? existing.stage : null);
+        showToast('Order updated');
+      } else {
+        await createOrder(data);
+        showToast('Order created');
+      }
+      closeModal();
+    }catch(err){
+      console.error(err);
+      showToast('Save failed — check connection');
+    }finally{
+      saveBtn.disabled = false;
+    }
+  });
+
+  deleteBtn.addEventListener('click', async function(){
+    if(!editingId) return;
+    if(confirm('Delete this order permanently? This cannot be undone.')){
+      try{
+        await deleteOrder(editingId);
+        showToast('Order deleted');
+        closeModal();
+      }catch(err){
+        console.error(err);
+        showToast('Delete failed — check connection');
+      }
+    }
+  });
+
+  /* ---------- Rendering ---------- */
+  function renderDashboard(){
+    const active = orders.filter(o=>o.stage !== 'completed');
+    const completed = orders.filter(o=>o.stage === 'completed');
+    const pending = active.filter(o=> o.deadline && o.deadline <= todayISO());
+    const output = completed.reduce((sum,o)=> sum + (o.quantity||0), 0);
+
+    document.getElementById('statActive').textContent = active.length;
+    document.getElementById('statCompleted').textContent = completed.length;
+    document.getElementById('statPending').textContent = pending.length;
+    document.getElementById('statOutput').textContent = output.toLocaleString();
+
+    // pipeline glance
+    const glance = document.getElementById('pipelineGlance');
+    const total = active.length || 1;
+    glance.innerHTML = STAGES.filter(s=>s.key!=='completed').map(s=>{
+      const count = active.filter(o=>o.stage===s.key).length;
+      const pct = Math.round((count/total)*100);
+      return `<div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gold-dim);margin-bottom:4px;">
+          <span>${s.label}</span><span class="mono">${count}</span>
+        </div>
+        <div style="background:var(--surface-3);border-radius:6px;height:7px;overflow:hidden;">
+          <div style="background:var(--gold);height:100%;width:${pct}%;"></div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // recent orders (last 6 by createdAt)
+    const recent = [...orders].sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||'')).slice(0,6);
+    const body = document.getElementById('recentOrdersBody');
+    body.innerHTML = recent.length ? recent.map(rowHtmlDashboard).join('') : emptyRow(7, 'No orders yet — create your first order to get started.');
+    attachRowClicks(body);
+  }
+
+  function rowHtmlDashboard(o){
+    return `<tr data-id="${o.id}">
+      <td class="mono">${escapeHtml(o.orderId)}</td>
+      <td>${escapeHtml(o.client)}</td>
+      <td>${escapeHtml(o.productType)}</td>
+      <td>${o.quantity}</td>
+      <td>${fmtDate(o.deadline)}</td>
+      <td><span class="badge stage">${stageLabel(o.stage)}</span></td>
+      <td><span class="badge ${paymentBadgeClass(o.paymentStatus)}">${o.paymentStatus}</span></td>
+    </tr>`;
+  }
+
+  function renderActive(){
+    const search = document.getElementById('activeSearch').value.trim().toLowerCase();
+    const stageFilter = document.getElementById('activeStageFilter').value;
+    const paymentFilter = document.getElementById('activePaymentFilter').value;
+
+    let list = orders.filter(o=>o.stage !== 'completed');
+    if(stageFilter) list = list.filter(o=>o.stage === stageFilter);
+    if(paymentFilter) list = list.filter(o=>o.paymentStatus === paymentFilter);
+    if(search){
+      list = list.filter(o=>
+        (o.client||'').toLowerCase().includes(search) ||
+        (o.orderId||'').toLowerCase().includes(search) ||
+        (o.productType||'').toLowerCase().includes(search)
+      );
+    }
+    list.sort((a,b)=> (a.deadline||'9999').localeCompare(b.deadline||'9999'));
+
+    const body = document.getElementById('activeOrdersBody');
+    body.innerHTML = list.length ? list.map(o=>`<tr data-id="${o.id}">
+      <td class="mono">${escapeHtml(o.orderId)}</td>
+      <td>${escapeHtml(o.client)}</td>
+      <td>${escapeHtml(o.productType)}</td>
+      <td>${o.quantity}</td>
+      <td>${fmtDate(o.orderDate)}</td>
+      <td>${fmtDate(o.deadline)} ${isOverdue(o) ? '<span class="badge overdue">Overdue</span>' : ''}</td>
+      <td><span class="badge stage">${stageLabel(o.stage)}</span></td>
+      <td><span class="badge ${paymentBadgeClass(o.paymentStatus)}">${o.paymentStatus}</span></td>
+    </tr>`).join('') : emptyRow(8, 'No matching active orders.');
+    attachRowClicks(body);
+  }
+
+  function renderArchive(){
+    const search = document.getElementById('archiveSearch').value.trim().toLowerCase();
+    let list = orders.filter(o=>o.stage === 'completed');
+    if(search){
+      list = list.filter(o=>
+        (o.client||'').toLowerCase().includes(search) ||
+        (o.orderId||'').toLowerCase().includes(search) ||
+        (o.productType||'').toLowerCase().includes(search)
+      );
+    }
+    list.sort((a,b)=> (b.completedAt||'').localeCompare(a.completedAt||''));
+
+    const body = document.getElementById('archiveOrdersBody');
+    body.innerHTML = list.length ? list.map(o=>`<tr data-id="${o.id}">
+      <td class="mono">${escapeHtml(o.orderId)}</td>
+      <td>${escapeHtml(o.client)}</td>
+      <td>${escapeHtml(o.productType)}</td>
+      <td>${o.quantity}</td>
+      <td>${fmtDate(o.orderDate)}</td>
+      <td>${fmtDate(o.completedAt)}</td>
+      <td><span class="badge ${paymentBadgeClass(o.paymentStatus)}">${o.paymentStatus}</span></td>
+    </tr>`).join('') : emptyRow(7, 'No completed orders yet. Finished orders will be archived here permanently.');
+    attachRowClicks(body);
+  }
+
+  function renderPipeline(){
+    const wrap = document.getElementById('pipelineWrap');
+    const pipelineStages = STAGES.filter(s=>s.key !== 'completed');
+    wrap.innerHTML = pipelineStages.map(s=>{
+      const list = orders.filter(o=>o.stage === s.key).sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
+      const cards = list.map(o=>{
+        const idx = pipelineStages.findIndex(ps=>ps.key===s.key);
+        const prevStage = idx>0 ? pipelineStages[idx-1].key : null;
+        const nextStage = idx < pipelineStages.length-1 ? pipelineStages[idx+1].key : 'completed';
+        return `<div class="pipeline-card" data-id="${o.id}">
+          <div class="pc-id mono">${escapeHtml(o.orderId)}</div>
+          <div class="pc-client">${escapeHtml(o.client)}</div>
+          <div class="pc-meta">${escapeHtml(o.productType)} · Qty ${o.quantity} · ${fmtDate(o.deadline)}${isOverdue(o)?' · <span style="color:var(--danger)">overdue</span>':''}</div>
+          <div class="stage-actions">
+            <button data-move="${o.id}:${prevStage||''}" ${prevStage? '' : 'disabled'}>← Back</button>
+            <button data-move="${o.id}:${nextStage}">Advance →</button>
+          </div>
+        </div>`;
+      }).join('');
+      return `<div class="pipeline-col">
+        <div class="pipeline-col-head"><span class="name">${s.label}</span><span class="count">${list.length}</span></div>
+        ${cards || '<div class="pipeline-col-empty">No orders in this stage</div>'}
+      </div>`;
+    }).join('');
+
+    // card click -> open edit (but not when clicking action buttons)
+    wrap.querySelectorAll('.pipeline-card').forEach(card=>{
+      card.addEventListener('click', (e)=>{
+        if(e.target.closest('button')) return;
+        const o = orders.find(x=>x.id === card.dataset.id);
+        if(o) openModal(o);
+      });
+    });
+    wrap.querySelectorAll('[data-move]').forEach(btn=>{
+      btn.addEventListener('click', async (e)=>{
+        e.stopPropagation();
+        const [id, target] = btn.dataset.move.split(':');
+        if(!target) return;
+        btn.disabled = true;
+        try{
+          await moveOrderStage(id, target);
+          showToast(target === 'completed' ? 'Order marked completed — archived' : 'Moved to ' + stageLabel(target));
+        }catch(err){
+          console.error(err);
+          showToast('Update failed — check connection');
+        }finally{
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  function attachRowClicks(tbody){
+    tbody.querySelectorAll('tr[data-id]').forEach(tr=>{
+      tr.addEventListener('click', ()=>{
+        const o = orders.find(x=>x.id === tr.dataset.id);
+        if(o) openModal(o);
+      });
+    });
+  }
+
+  function emptyRow(colspan, msg){
+    return `<tr class="empty-row"><td colspan="${colspan}">${msg}</td></tr>`;
+  }
+  function escapeHtml(str){
+    return String(str==null?'':str).replace(/[&<>"']/g, c=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function renderAll(){
+    renderDashboard();
+    renderActive();
+    renderPipeline();
+    renderArchive();
+  }
+
+  ['activeSearch','activeStageFilter','activePaymentFilter'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', renderActive);
+    document.getElementById(id).addEventListener('change', renderActive);
+  });
+  document.getElementById('archiveSearch').addEventListener('input', renderArchive);
+
+  /* ---------- Auth: silent anonymous session (no login screen) ---------- */
+  // No username/password UI anymore — the outer Opoligon app already
+  // protects this page behind its PIN keypad. We still sign in
+  // anonymously so Firestore rules requiring request.auth != null
+  // keep working, entirely in the background.
+  const syncLabel = document.getElementById('syncLabel');
+
+  auth.signInAnonymously().catch(function(err){
+    console.error('Firebase sign-in error:', err);
+    syncLabel.textContent = 'Connection error';
+    document.getElementById('syncDot').classList.add('offline');
+    showToast('Could not connect — check Firebase config');
+  });
+
+  auth.onAuthStateChanged(function(user){
+    currentUser = user;
+    if(user){
+      syncLabel.textContent = 'Synced';
+      startOrdersListener();
+    } else {
+      syncLabel.textContent = 'Offline';
+      stopOrdersListener();
+    }
+  });
+})();
+</script>
+</body>
+</html>
