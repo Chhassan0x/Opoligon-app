@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Opoligon — Factory Management Dashboard</title>
 <meta name="description" content="Opoligon Factory Management Dashboard">
-<meta name="theme-color" content="#7a1a28">
+<meta name="theme-color" content="#411D22">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -14,27 +14,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --canvas:rgba(122,26,40,0.5);
-    --canvas-deep:#3a0f18;
-    --surface:rgba(122,26,40,0.5);
-    --surface-2:rgba(122,26,40,0.62);
-    --surface-3:rgba(122,26,40,0.38);
-    --gold:#c7b27c;
-    --gold-bright:#f6e6c2;
-    --gold-dim:#e6d2ae;
-    --ink:#5a1c26;
-    --ink-dim:#8a4d55;
-    --border:rgba(255,255,255,0.32);
-    --border-strong:rgba(255,255,255,0.5);
-    --stitch:rgba(246,230,194,0.45);
-    --ok:#8ea77e;
-    --ok-bg:rgba(142,167,126,0.22);
-    --warn:#cf9d4c;
-    --warn-bg:rgba(207,157,76,0.22);
-    --danger:#b5645c;
-    --danger-bg:rgba(181,100,92,0.22);
-    --glass-blur:14px;
-    --glass-shadow:0 8px 32px rgba(90,20,30,0.16), inset 0 1px 0 rgba(255,255,255,0.15);
+    --canvas:#411D22;
+    --canvas-deep:#2c1216;
+    --surface:rgba(255,255,255,0.13);
+    --surface-2:rgba(255,255,255,0.20);
+    --surface-3:rgba(255,255,255,0.08);
+    --gold:#ffffff;
+    --gold-bright:#ffffff;
+    --gold-dim:rgba(255,255,255,0.74);
+    --ink:#ffffff;
+    --ink-dim:rgba(255,255,255,0.72);
+    --border:rgba(255,255,255,0.30);
+    --border-strong:rgba(255,255,255,0.52);
+    --stitch:rgba(255,255,255,0.4);
+    --ok:#a8d19a;
+    --ok-bg:rgba(142,167,126,0.28);
+    --warn:#e6b566;
+    --warn-bg:rgba(207,157,76,0.28);
+    --danger:#e08c84;
+    --danger-bg:rgba(181,100,92,0.28);
+    --glass-blur:18px;
+    --glass-shadow:0 14px 34px rgba(0,0,0,0.38), 0 0 42px rgba(255,214,170,0.10), inset 0 1px 0 rgba(255,255,255,0.3);
     --radius:14px;
     --font-display:'Manrope',sans-serif;
     --font-body:'Inter',sans-serif;
@@ -44,15 +44,14 @@
   html,body{margin:0;padding:0;}
   body{
     background:
-      radial-gradient(circle at 12% 18%, rgba(216,158,140,0.4), transparent 42%),
-      radial-gradient(circle at 88% 8%, rgba(199,178,124,0.32), transparent 48%),
-      radial-gradient(circle at 20% 85%, rgba(181,100,92,0.28), transparent 50%),
-      radial-gradient(circle at 90% 80%, rgba(230,197,160,0.35), transparent 50%),
-      linear-gradient(160deg, #f7e9db 0%, #f0dcc6 45%, #e9d0b2 100%);
+      radial-gradient(ellipse at 28% 12%, rgba(255,224,180,0.14), transparent 50%),
+      radial-gradient(ellipse at 80% 75%, rgba(255,255,255,0.06), transparent 55%),
+      radial-gradient(ellipse at 10% 90%, rgba(0,0,0,0.25), transparent 55%),
+      #411D22;
     background-attachment:fixed;
     color:var(--ink);font-family:var(--font-body);min-height:100vh;-webkit-font-smoothing:antialiased;
   }
-  ::selection{background:var(--gold);color:var(--canvas-deep);}
+  ::selection{background:#ffffff;color:var(--canvas-deep);}
   a{color:inherit;text-decoration:none;}
   button{font-family:inherit;}
   ::-webkit-scrollbar{width:8px;height:8px;}
@@ -130,9 +129,9 @@
   .trend-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x proximity;}
   .trend-row + .trend-row{margin-top:10px;}
   .trend-card{
-    flex:0 0 160px;width:160px;height:220px;scroll-snap-align:start;background:var(--surface);border:1px solid var(--border);
-    border-radius:14px;padding:16px 12px;text-align:center;position:relative;cursor:pointer;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+    flex:0 0 200px;width:200px;height:460px;scroll-snap-align:start;background:var(--surface);border:1px solid var(--border);
+    border-radius:16px;padding:16px 14px;text-align:center;position:relative;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
     transition:transform .12s ease, border-color .12s ease;
   }
   .trend-card:hover{transform:translateY(-3px);border-color:var(--border-strong);}
@@ -143,16 +142,16 @@
   }
   .trend-card .tc-edit:hover{color:var(--gold-bright);border-color:var(--border-strong);}
   .trend-card .tc-icon{
-    font-size:34px;display:flex;align-items:center;justify-content:center;line-height:1;
-    width:112px;height:112px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);
+    font-size:52px;display:flex;align-items:center;justify-content:center;line-height:1;
+    width:100%;height:330px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);
     overflow:hidden;flex-shrink:0;
   }
   .trend-card .tc-icon img{width:100%;height:100%;object-fit:contain;display:block;}
-  .trend-card .tc-name{font-size:12.5px;font-weight:700;color:var(--gold-bright);line-height:1.3;}
+  .trend-card .tc-name{font-size:13px;font-weight:700;color:var(--gold-bright);line-height:1.3;}
   .trend-card .tc-hint{font-size:10px;color:var(--gold-dim);font-family:var(--font-mono);letter-spacing:0.4px;}
   @media(min-width:900px){
     .trend-row{overflow-x:visible;}
-    .trend-card{flex:0 0 160px;}
+    .trend-card{flex:0 0 200px;}
   }
 
   /* ---------- Contact & Social ---------- */
@@ -213,11 +212,15 @@
   .badge.overdue{background:var(--danger-bg);color:var(--danger);}
 
   /* ---------- Factory sub-tabs ---------- */
-  nav.tabs{display:flex;gap:4px;overflow-x:auto;margin-bottom:16px;border-bottom:1px solid var(--border);scrollbar-width:none;}
+  nav.tabs{
+    display:flex;gap:4px;overflow-x:auto;margin-bottom:16px;
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:5px;
+    scrollbar-width:none;
+  }
   nav.tabs::-webkit-scrollbar{display:none;}
-  nav.tabs button{background:none;border:none;color:var(--gold-dim);font-weight:600;font-size:13px;padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+  nav.tabs button{background:none;border:none;color:var(--gold-dim);font-weight:600;font-size:13px;padding:9px 14px;cursor:pointer;border-radius:8px;white-space:nowrap;transition:background .12s ease, color .12s ease;}
   nav.tabs button:hover{color:var(--gold-bright);}
-  nav.tabs button.active{color:var(--gold-bright);border-bottom-color:var(--gold);}
+  nav.tabs button.active{background:var(--surface-2);color:var(--gold-bright);}
   .sub-view{display:none;}
   .sub-view.active{display:block;}
 
@@ -348,7 +351,7 @@
 
   /* ---------- Liquid Glass (glassmorphism) treatment ---------- */
   header.top, .dash-tile, .carousel-slide, .contact-panel, .stat-card, .panel,
-  .pipeline-col, .pipeline-card, .cat-sidebar, .cctv-card, .trend-card,
+  .pipeline-col, .pipeline-card, .cat-sidebar, .cctv-card, .trend-card, nav.tabs,
   .modal, .add-camera-card, .toast, .toolbar input, .toolbar select,
   .field input, .field select, .field textarea, .keypad button,
   .home-btn, .add-btn, .btn-primary, .btn-secondary, .btn-danger,
