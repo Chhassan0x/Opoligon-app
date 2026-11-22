@@ -1,3 +1,4 @@
+importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 const CACHE_NAME = "opoligon-cache-v23";
 const LOCAL_ASSETS = [
   "./",
